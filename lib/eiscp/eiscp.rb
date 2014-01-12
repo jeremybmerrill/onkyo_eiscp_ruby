@@ -2,7 +2,7 @@ require 'socket'
 require_relative 'eiscp_packet.rb'
 require_relative 'iscp_message.rb'
 
-module Hifi
+module Eiscp
   class EISCP
     ONKYO_PORT = 60128
     ONKYO_MAGIC = EISCPPacket.new("ECN", "QSTN", "x").to_s

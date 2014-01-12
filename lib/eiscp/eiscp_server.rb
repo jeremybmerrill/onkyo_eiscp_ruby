@@ -3,7 +3,7 @@ require_relative 'eiscp_packet'
 require_relative 'eiscp'
 
 # Mock server that only responds to ECNQSTN.
-module Hifi
+module Eiscp
   class EISCPServer
 
     ONKYO_DISCOVERY_RESPONSE =  EISCPPacket.new("ECN", "TX-NR609/60128/DX/001122334455")

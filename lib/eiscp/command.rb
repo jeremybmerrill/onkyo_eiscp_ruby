@@ -2,17 +2,17 @@ require 'yaml'
 require_relative 'eiscp'
 require 'ostruct'
 
-module Hifi
+module Eiscp
   class Command
 
     @@yaml_file_path = File.join(File.expand_path(File.dirname(__FILE__)), '../../eiscp-commands.yaml')
     @@yaml_object = YAML.load(File.read(@@yaml_file_path))
-    @@modelsets = @@yaml_object["modelsets"]
-    @@yaml_object.delete("modelsets") #TODO: @@modelsets = @@yaml_object.delete("modelsets")
+    @@modelsets = @@yaml_object.delete("modelsets")
     @@zones = @@yaml_object.keys
     @@zones.each {|zone| class_variable_set("@@#{zone}", nil) }
     @@main = @@yaml_object['main']
 
+    # I'm not sure why this is here -- it erases all the commands in all the zones!
     # @@zones.each do |zone|
     #   Command.class_variable_set("@@#{zone}", "[]")
     # end
@@ -45,7 +45,7 @@ module Hifi
     def self.description_from_name(name)
       @@main.each_pair do |command, attrs|
         if attrs['name'] == name
-          return command['description']
+          return attrs['description']
         end
       end
     end

@@ -3,7 +3,7 @@ require_relative 'iscp_message'
 # Public: Encapsulates ISCP Messages in eISCP packets to send on the network.
 # You can alsoe use the class method 'parse' to create objects from strings
 # captured from the network using the EISCP class.
-module Hifi
+module Eiscp
   class EISCPPacket
     
     MAGIC = "ISCP"
