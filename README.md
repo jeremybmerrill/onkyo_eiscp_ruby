@@ -34,8 +34,7 @@ ________________
 	end
 
 	# Turn on the receiver
-	iscp_message = ISCPMessage.new("PWR", "01")
-	eiscp_packet = EISCPPacket.new(iscp_message.message)
-	eiscp.send(eiscp_packet.to_s)
+	eiscp_packet = EISCPPacket.new("PWR", "01")
+	eiscp.send_packet(eiscp_packet.to_s)
 	
 
