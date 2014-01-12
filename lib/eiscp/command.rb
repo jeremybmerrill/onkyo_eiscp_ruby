@@ -1,8 +1,8 @@
 require 'yaml'
-require 'eiscp/eiscp'
+require_relative 'eiscp'
 require 'ostruct'
 
-module Command
+class Command
 
   @@yaml_file_path = File.join(File.expand_path(File.dirname(__FILE__)), '../../eiscp-commands.yaml')
   @@yaml_object = YAML.load(File.read(@@yaml_file_path))
@@ -11,13 +11,10 @@ module Command
   @@zones = @@yaml_object.map{|k, v| k}
   @@zones.each {|zone| class_variable_set("@@#{zone}", nil) }
   @@main = @@yaml_object['main']
-  
 
   @@zones.each do |zone|
     Command.class_variable_set("@@#{zone}", "[]")
   end
-
-
 
   def self.command_to_name(command)
     return @@main[command]['name']

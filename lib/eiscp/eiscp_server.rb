@@ -1,6 +1,6 @@
 require 'socket'
-require 'eiscp/eiscp_packet'
-require 'eiscp/eiscp'
+require_relative 'eiscp_packet'
+require_relative 'eiscp'
 
 # Mock server that only responds to ECNQSTN.
 

@@ -1,6 +1,6 @@
 require 'socket'
-require 'eiscp/eiscp_packet.rb'
-require 'eiscp/iscp_message.rb'
+require_relative 'eiscp_packet.rb'
+require_relative 'iscp_message.rb'
 
 class EISCP
   ONKYO_PORT = 60128
