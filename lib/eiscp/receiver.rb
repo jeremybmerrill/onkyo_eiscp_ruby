@@ -1,89 +1,90 @@
 require 'socket'
-require_relative 'eiscp'
+require 'eiscp/message'
 
-class Receiver
+module EISCP
+  class Receiver
 
-  attr_accessor :host
-  attr_accessor :model
-  attr_accessor :port
-  attr_accessor :area
-  attr_accessor :mac_address
+    attr_accessor :host
+    attr_accessor :model
+    attr_accessor :port
+    attr_accessor :area
+    attr_accessor :mac_address
 
-  @onkyo_magic = EISCP.new("ECN", "QSTN", "x").to_eiscp
-  ONKYO_PORT = 60128
-  # Create a new EISCP object to communicate with a receiver.
+    ONKYO_MAGIC = Message.new("ECN", "QSTN", "x").to_eiscp
+    ONKYO_PORT = 60128
+    # Create a new EISCP object to communicate with a receiver.
 
-  def initialize(host)
-    @host = host
-    @port = ONKYO_PORT
-  end
-
-  # Internal method for receiving data with a timeout
-
-  def self.recv(sock, timeout = 0.5)
-    data = []
-    while true
-      ready = IO.select([sock], nil, nil, timeout)
-      if ready != nil
-        then readable = ready[0]
-      else
-        return data
-      end
-
-
-      readable.each do |socket|
-        begin
-          if socket == sock
-            data << sock.recv_nonblock(1024).chomp
-          end
-        rescue IO::WaitReadable
-          retry
-        end
-      end
-
+    def initialize(host, port = ONKYO_PORT)
+      @host = host
+      @port = port
     end
-  end
 
-  # Returns an array of arrays consisting of a discovery response packet string
-  # and the source ip address of the reciever.
+    # Internal method for receiving data with a timeout
 
-  def self.discover
-    sock = UDPSocket.new
-    sock.setsockopt(Socket::SOL_SOCKET, Socket::SO_BROADCAST, true)
-    sock.send(@onkyo_magic, 0, '<broadcast>', ONKYO_PORT)
-    data = []
-    while true
-      ready = IO.select([sock], nil, nil, 0.5)
-      if ready != nil
-        then readable = ready[0]
-      else
-        return data
-      end
-
-
-      readable.each do |socket|
-        begin
-          if socket == sock
-            msg, addr = sock.recvfrom_nonblock(1024)
-            data << [msg, addr[2]]
-          end
-        rescue IO::WaitReadable
-          retry
+    def self.recv(sock, timeout = 0.5)
+      data = []
+      while true
+        ready = IO.select([sock], nil, nil, timeout)
+        if ready != nil
+          then readable = ready[0]
+        else
+          return data
         end
+
+
+        readable.each do |socket|
+          begin
+            if socket == sock
+              data << sock.recv_nonblock(1024).chomp
+            end
+          rescue IO::WaitReadable
+            retry
+          end
+        end
+
       end
-
     end
-  end
 
-  # Sends a packet string on the network
+    # Returns an array of arrays consisting of a discovery response packet string
+    # and the source ip address of the reciever.
 
-  def send(eiscp_packet)
-    sock = TCPSocket.new @host, ONKYO_PORT
-    sock.puts eiscp_packet.to_eiscp
-    sock.close
-  end
+    def self.discover
+      sock = UDPSocket.new
+      sock.setsockopt(Socket::SOL_SOCKET, Socket::SO_BROADCAST, true)
+      sock.send(ONKYO_MAGIC, 0, '<broadcast>', ONKYO_PORT)
+      data = []
+      while true
+        ready = IO.select([sock], nil, nil, 0.5)
+        if ready != nil
+          then readable = ready[0]
+        else
+          return data
+        end
 
-  # Send a packet string and return recieved data string.
+
+        readable.each do |socket|
+          begin
+            if socket == sock
+              msg, addr = sock.recvfrom_nonblock(1024)
+              data << [msg, addr[2]]
+            end
+          rescue IO::WaitReadable
+            retry
+          end
+        end
+
+      end
+    end
+
+    # Sends a packet string on the network
+
+    def send(eiscp_packet)
+      sock = TCPSocket.new @host, @port
+      sock.puts eiscp_packet
+      sock.close
+    end
+
+    # Send a packet string and return recieved data string.
 
   def send_recv(eiscp_packet)
     sock = TCPSocket.new @host, ONKYO_PORT
@@ -106,28 +107,23 @@ class Receiver
         return
       end
 
-      readable.each do |socket|
-        begin
-          if socket == sock
-            data = sock.recv_nonblock(1024).chomp
-            if block_given?
-              yield data
-            else
-              puts data
+        readable.each do |socket|
+          begin
+            if socket == sock
+              data = sock.recv_nonblock(1024).chomp
+              if block_given?
+                yield data
+              else
+                puts data
+              end
             end
+          rescue IO::WaitReadable
+            retry
           end
-        rescue IO::WaitReadable
-          retry
         end
+
       end
-
     end
+
   end
-
 end
-
-
-
-
-
-

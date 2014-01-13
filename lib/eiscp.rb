@@ -1,4 +1,4 @@
-# Create and send EISCP messages to control Onkyo receivers.
+# Library for controlling Onkyo receivers over TCP/IP.
 
 # class EISCP
 #   VERSION = '0.0.2'
