@@ -15,10 +15,10 @@ module EISCP
     attr_accessor :command
     attr_accessor :parameter
     attr_reader   :iscp_message
-
+    alias_method :param, :parameter
 
     # REGEX
-    REGEX = /(?<start>!)?(?<unit_type>(\d|x))?(?<command>[A-Z]{3})\s?(?<parameter>.*)(?<end>(\x0D|\x0A|\x1A))?/
+    REGEX = /(?<start>!)?(?<unit_type>(\d|x))?(?<command>[A-Z]{3})\s?(?<parameter>[^\x1A]*)(?<end>(\x0D|\x0A|\x1A))?/
 
     def initialize(command, parameter, unit_type = "1", start = "!")
       if unit_type == nil
@@ -57,7 +57,9 @@ module EISCP
       end
     end
 
-
+    def inspect
+      "#<EISCP::Message #{command}:#{parameter}>"
+    end
 
     # ISCP Message string parser
 
@@ -88,7 +90,7 @@ module EISCP
 
     # Return EISCP Message string
     def to_eiscp
-      return [ @header[:magic], @header[:header_size], @header[:data_size], @header[:version], @header[:reserved], @iscp_message.to_s ].pack("A4NNAa3A*")
+      return [ @header[:magic], @header[:header_size], @header[:data_size], @header[:version], @header[:reserved], @iscp_message.to_s].pack("A4NNAa3A*").encode("ascii", :invalid => :replace, :undef => :replace)
     end
 
   end

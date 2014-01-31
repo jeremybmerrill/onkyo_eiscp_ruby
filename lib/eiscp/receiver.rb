@@ -1,5 +1,5 @@
 require 'socket'
-require 'eiscp/message'
+require_relative 'message'
 
 module EISCP
   class Receiver
@@ -90,6 +90,7 @@ module EISCP
     sock = TCPSocket.new @host, ONKYO_PORT
     sock.puts eiscp_packet.to_eiscp
     resp = Receiver.recv(sock, 0.5)
+    sock.close
     puts resp
     resp
   end
@@ -124,6 +125,5 @@ module EISCP
 
       end
     end
-
   end
 end
