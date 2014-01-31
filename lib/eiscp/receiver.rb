@@ -101,10 +101,10 @@ module EISCP
     # Returns an array of arrays consisting of a discovery response packet string
     # and the source ip address of the reciever.
 
-    def self.discover
+    def self.discover(port=ONKYO_PORT)
       sock = UDPSocket.new
       sock.setsockopt(Socket::SOL_SOCKET, Socket::SO_BROADCAST, true)
-      sock.send(ONKYO_MAGIC, 0, '<broadcast>', ONKYO_PORT)
+      sock.send(ONKYO_MAGIC, 0, '<broadcast>', port)
       data = []
       while true
         ready = IO.select([sock], nil, nil, 0.5)
@@ -139,31 +139,17 @@ module EISCP
 
     # Send a packet string and return recieved data string.
 
-<<<<<<< HEAD
-  def send_recv(eiscp_packet)
-    sock = TCPSocket.new @host, ONKYO_PORT
-    sock.puts eiscp_packet.to_eiscp
-    resp = Receiver.recv(sock, 0.5)
-    sock.close
-    puts resp
-    resp
-  end
-=======
     def send_recv(eiscp_packet)
       sock = TCPSocket.new @host, @port
       sock.puts eiscp_packet
       return Receiver.recv(sock, 0.5)
     end
 
-    # Open a TCP connection to the host and print all received messages until
-    # killed.
->>>>>>> master
-
   # Open a TCP connection to the host and print all received messages until
   # killed.
 
   def connect(&block)
-    sock = TCPSocket.new @host, ONKYO_PORT
+    sock = TCPSocket.new @host, @port
     while true
       ready = IO.select([sock], nil, nil, nil)
       if ready != nil

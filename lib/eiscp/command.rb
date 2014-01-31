@@ -23,10 +23,12 @@ module EISCP
         end
       end
     end
-  def self.command_name_to_command(name)
-    @@main.each_pair do |command, attrs|
-      if attrs['name'] == name
-        return command
+
+    def self.command_name_to_command(name)
+      @@main.each_pair do |command, attrs|
+        if attrs['name'] == name
+          return command
+        end
       end
     end
 
@@ -50,12 +52,15 @@ module EISCP
         end
       end
     end
-  def self.description_from_command_name(name)
-    @@main.each_pair do |command, attrs|
-      if attrs['name'] == name
-        return @@main[command]['description']
+
+    def self.description_from_command_name(name)
+      @@main.each_pair do |command, attrs|
+        if attrs['name'] == name
+          return @@main[command]['description']
+        end
       end
     end
+
 
     def self.description_from_command(command)
       return @@main[command]['description']
@@ -78,32 +83,33 @@ module EISCP
       end
     end
 
-  def self.list_compatible_commands(modelstring)
-    sets = [] 
-    @@modelsets.each_pair do |set, array|
-      if array.include? modelstring
-        sets << set
+    def self.list_compatible_commands(modelstring)
+      sets = [] 
+      @@modelsets.each_pair do |set, array|
+        if array.include? modelstring
+          sets << set
+        end
       end
+      return sets
     end
-    return sets
-  end
 
-  def self.parse(string)
-    array = string.split(" ")
-    zone = 'main'
-    command_name = ''
-    parameter_name = ''
-    if array.count == 3
-      zone = array.shift
-      command_name = array.shift
-      parameter_name = array.shift
-    elsif array.count == 2
-      command_name = array.shift
-      parameter_name = array.shift
+    def self.parse(string)
+      array = string.split(" ")
+      zone = 'main'
+      command_name = ''
+      parameter_name = ''
+      if array.count == 3
+        zone = array.shift
+        command_name = array.shift
+        parameter_name = array.shift
+      elsif array.count == 2
+        command_name = array.shift
+        parameter_name = array.shift
+      end
+      command = Command.command_name_to_command(command_name)
+      parameter = Command.command_value_name_to_value(command, parameter_name)
+      return EISCP::Message.new(command, parameter)
     end
-    command = Command.command_name_to_command(command_name)
-    parameter = Command.command_value_name_to_value(command, parameter_name)
-    return EISCP::Message.new(command, parameter)
   end
 
 end
