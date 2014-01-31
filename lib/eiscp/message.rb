@@ -17,8 +17,8 @@ module EISCP
     attr_reader   :iscp_message
     alias_method :param, :parameter
 
-    # REGEX
-    REGEX = /(?<start>!)?(?<unit_type>(\d|x))?(?<command>[A-Z]{3})\s?(?<parameter>[^\x1A]*)(?<end>(\x0D|\x0A|\x1A))?/
+    # REGEX = /(?<start>!)?(?<unit_type>(\d|x))?(?<command>[A-Z]{3})\s?(?<parameter>[^\x1A]*)(?<end>(\x0D|\x0A|\x1A))?/
+    REGEX = /(?<start>!)?(?<unit_type>(\d|x))?(?<command>[A-Z]{3})\s?(?<parameter>.*)(?<end>\x1A)?/
 
     def initialize(command, parameter, unit_type = "1", start = "!")
       if unit_type == nil
@@ -43,6 +43,10 @@ module EISCP
     end
 
 
+    # Check if two messages send the same command
+    def ==(message_object)
+      self.iscp_message == message_object.iscp_message ? true : false
+    end
     # Identifies message format, calls appropriate parse function
     # returns Message object.
 
